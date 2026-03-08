@@ -16,8 +16,8 @@
       --accent:     #7eb8ff;
       --accent-dim: #3a6ea5;
       --cyan:       #4dd8c0;
-      --text:       #c8d0dc;
-      --text-dim:   #495568;
+      --text:       #d7deea;
+      --text-dim:   #7e8da3;
       --text-bright:#edf0f7;
       --font-sans:  "Inter", "Noto Sans JP", -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono:  "JetBrains Mono", monospace;
@@ -26,7 +26,9 @@
     html { scroll-behavior: smooth; }
 
     body {
-      background: var(--bg);
+      background:
+        radial-gradient(1200px 480px at 50% -120px, rgba(38, 82, 156, .25) 0%, rgba(10, 16, 28, .12) 35%, transparent 70%),
+        linear-gradient(180deg, #06080f 0%, #04060b 55%, #03050a 100%);
       color: var(--text);
       font-family: var(--font-sans);
       line-height: 1.8;
@@ -226,11 +228,11 @@
 
     .hero-badge {
       font-family: var(--font-mono);
-      font-size: .72rem;
+      font-size: .78rem;
       font-weight: 400;
       letter-spacing: .25em;
       text-transform: uppercase;
-      color: rgba(255,255,255,.58);
+      color: rgba(255,255,255,.72);
       margin-bottom: 3.2rem;
     }
 
@@ -256,9 +258,9 @@
     }
 
     .hero-en {
-      font-size: clamp(.95rem, 1.75vw, 1.18rem);
+      font-size: clamp(1.02rem, 1.9vw, 1.26rem);
       font-weight: 300;
-      color: rgba(255,255,255,.72);
+      color: rgba(255,255,255,.82);
       line-height: 2;
       letter-spacing: .05em;
       margin-bottom: 2.2rem;
@@ -266,9 +268,9 @@
     .hero-en strong { color: rgba(255,255,255,.92); font-weight: 500; }
 
     .hero-desc {
-      font-size: .9rem;
+      font-size: .98rem;
       font-weight: 300;
-      color: rgba(255,255,255,.52);
+      color: rgba(255,255,255,.66);
       letter-spacing: .04em;
       margin-bottom: 2.6rem;
     }
@@ -281,12 +283,12 @@
       gap: .6rem 1.1rem;
       margin-bottom: 2.4rem;
       font-family: var(--font-mono);
-      font-size: .76rem;
+      font-size: .82rem;
       letter-spacing: .03em;
-      color: rgba(255,255,255,.56);
+      color: rgba(255,255,255,.68);
       max-width: 760px;
     }
-    .hero-meta a { color: #89c8ff; font-weight: 500; }
+    .hero-meta a { color: #9ad1ff; font-weight: 600; }
     .meta-dot { opacity: .35; }
     .meta-break {
       flex-basis: 100%;
@@ -301,22 +303,22 @@
     }
 
     .btn {
-      padding: .62em 1.45em;
-      font-size: .78rem;
+      padding: .68em 1.52em;
+      font-size: .84rem;
       font-weight: 500;
       letter-spacing: .04em;
       border-radius: 6px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.03);
-      color: rgba(255,255,255,.82);
+      border: 1px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.92);
       cursor: pointer;
       transition: all .3s;
     }
     .btn:hover {
       border-color: rgba(126,184,255,.45);
       color: #ffffff;
-      background: rgba(126,184,255,.10);
-      box-shadow: 0 0 24px rgba(126,184,255,.12);
+      background: rgba(126,184,255,.16);
+      box-shadow: 0 0 28px rgba(126,184,255,.18);
       opacity: 1;
     }
 
@@ -327,22 +329,22 @@
       transform: translateX(-50%);
       z-index: 2;
       font-family: var(--font-mono);
-      font-size: .62rem;
+      font-size: .68rem;
       letter-spacing: .3em;
       text-transform: uppercase;
-      color: rgba(255,255,255,.42);
+      color: rgba(255,255,255,.62);
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: .45rem;
       animation: pulse 3.5s ease-in-out infinite;
     }
-    .scroll-hint svg { width: 14px; height: 14px; stroke: rgba(255,255,255,.42); stroke-width: 1.5; }
+    .scroll-hint svg { width: 15px; height: 15px; stroke: rgba(255,255,255,.62); stroke-width: 1.5; }
     @keyframes pulse { 0%,100% { opacity: .15; } 50% { opacity: .6; } }
 
     /* ================================ SLIDE 2 — STATEMENT ================================ */
     .slide-statement {
-      background: linear-gradient(180deg, var(--bg) 0%, #07090f 100%);
+      background: linear-gradient(180deg, #080b14 0%, #06090f 100%);
     }
 
     /* Light accent for this slide too */
@@ -370,16 +372,18 @@
     .statement-main em { font-style: normal; color: var(--accent); }
 
     .statement-sub {
-      font-size: .95rem;
+      font-size: 1.02rem;
       font-weight: 300;
-      color: var(--text-dim);
+      color: rgba(220,230,245,.82);
       line-height: 2.1;
       max-width: 600px;
     }
 
     /* ================================ SLIDE 3 — CONTEXT ================================ */
     .slide-context {
-      background: linear-gradient(180deg, #07090f 0%, #060810 100%);
+      background:
+        radial-gradient(1000px 360px at 80% 0%, rgba(58, 105, 183, .14) 0%, transparent 70%),
+        linear-gradient(180deg, #070b14 0%, #05080f 100%);
     }
 
     .slide-context .fade-in {
@@ -390,38 +394,38 @@
 
     .context-label {
       font-family: var(--font-mono);
-      font-size: .55rem;
+      font-size: .65rem;
       letter-spacing: .3em;
       text-transform: uppercase;
-      color: var(--text-dim);
-      margin-bottom: 3.5rem;
+      color: rgba(170, 196, 232, .85);
+      margin-bottom: 2.8rem;
     }
 
     .context-jp {
-      font-size: clamp(.95rem, 2vw, 1.1rem);
+      font-size: clamp(1.15rem, 2.4vw, 1.45rem);
       font-weight: 400;
-      color: var(--text);
-      line-height: 2.4;
-      max-width: 520px;
-      margin-bottom: 2.5rem;
+      color: rgba(238,244,252,.95);
+      line-height: 2;
+      max-width: 740px;
+      margin-bottom: 2rem;
     }
 
     .context-en {
-      font-size: .82rem;
+      font-size: 1rem;
       font-weight: 300;
-      color: var(--text-dim);
-      line-height: 2.2;
-      max-width: 520px;
-      margin-bottom: 3rem;
+      color: rgba(196,210,230,.82);
+      line-height: 2;
+      max-width: 720px;
+      margin-bottom: 2rem;
       font-style: italic;
     }
 
     .context-ref {
-      font-size: .65rem;
-      color: var(--text-dim);
+      font-size: .86rem;
+      color: rgba(170,184,204,.76);
       line-height: 1.9;
-      opacity: .6;
-      max-width: 520px;
+      opacity: .95;
+      max-width: 720px;
     }
     .context-ref cite { font-style: italic; }
 
@@ -435,15 +439,15 @@
 
     /* ================================ SLIDE 4 — PILLARS ================================ */
     .slide-pillars {
-      background: linear-gradient(180deg, #060810 0%, #050709 100%);
+      background: linear-gradient(180deg, #060a12 0%, #04070d 100%);
     }
 
     .pillars-label {
       font-family: var(--font-mono);
-      font-size: .55rem;
+      font-size: .64rem;
       letter-spacing: .3em;
       text-transform: uppercase;
-      color: var(--text-dim);
+      color: rgba(170,196,232,.82);
       margin-bottom: 4rem;
     }
 
@@ -474,40 +478,40 @@
     }
 
     .pillar p {
-      font-size: .86rem;
+      font-size: .94rem;
       font-weight: 300;
-      color: var(--text-dim);
-      line-height: 2.05;
+      color: rgba(205,216,232,.85);
+      line-height: 1.95;
     }
 
     /* ================================ SLIDE 5 — COMING SOON ================================ */
     .slide-soon {
-      background: linear-gradient(180deg, #050709 0%, var(--bg) 100%);
+      background: linear-gradient(180deg, #05080f 0%, #03050a 100%);
       min-height: 72vh;
     }
 
     .soon-label {
       font-family: var(--font-mono);
-      font-size: .55rem;
+      font-size: .62rem;
       letter-spacing: .3em;
       text-transform: uppercase;
-      color: var(--text-dim);
+      color: rgba(170,196,232,.78);
       margin-bottom: 3rem;
     }
 
     .soon-en {
-      font-size: clamp(.88rem, 1.8vw, 1.05rem);
+      font-size: clamp(1rem, 2vw, 1.2rem);
       font-weight: 300;
-      color: var(--text);
+      color: rgba(234,241,250,.92);
       line-height: 2.2;
       max-width: 520px;
       margin-bottom: 2rem;
     }
 
     .soon-jp {
-      font-size: .85rem;
+      font-size: .98rem;
       font-weight: 300;
-      color: var(--text-dim);
+      color: rgba(199,212,230,.86);
       line-height: 2.2;
       max-width: 520px;
       margin-bottom: 3.5rem;
@@ -557,6 +561,10 @@
       .pillars { grid-template-columns: 1fr; gap: 0; }
       .pillar { padding: 2rem 0.5rem; }
       .hero-meta { gap: .4rem .8rem; }
+      .context-jp { font-size: 1.03rem; line-height: 1.95; }
+      .context-en { font-size: .9rem; }
+      .context-ref { font-size: .76rem; }
+      .statement-main { font-size: clamp(1.6rem, 8vw, 2.5rem); }
     }
   </style>
 </head>
@@ -597,7 +605,7 @@
       <span class="meta-dot">&middot;</span>
       <a href="https://zenodo.org/records/16535944" target="_blank" rel="noopener">Zenodo record</a>
       <span class="meta-dot">&middot;</span>
-      <span style="opacity:.4">Uploaded on July 28, 2025</span>
+      <span style="opacity:.72">Uploaded on July 28, 2025</span>
     </div>
 
     <div class="hero-cta">
