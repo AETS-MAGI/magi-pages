@@ -452,16 +452,31 @@
 
     /* ================================ SLIDE 4 — PILLARS ================================ */
     .slide-pillars {
-      background: linear-gradient(180deg, #060a12 0%, #04070d 100%);
+      background:
+        radial-gradient(900px 320px at 20% 0%, rgba(86, 164, 255, .18) 0%, transparent 70%),
+        radial-gradient(760px 260px at 85% 70%, rgba(88, 236, 214, .12) 0%, transparent 75%),
+        linear-gradient(180deg, #060a12 0%, #04070d 100%);
+    }
+
+    .slide-pillars::before {
+      content: "";
+      position: absolute;
+      top: 8%;
+      left: 5%;
+      width: 90%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(126,184,255,.22) 50%, transparent 100%);
+      opacity: .65;
+      pointer-events: none;
     }
 
     .pillars-label {
       font-family: var(--font-mono);
-      font-size: .64rem;
+      font-size: .82rem;
       letter-spacing: .3em;
       text-transform: uppercase;
-      color: rgba(170,196,232,.82);
-      margin-bottom: 4rem;
+      color: rgba(195,214,241,.92);
+      margin-bottom: 3.4rem;
     }
 
     .pillars {
@@ -483,49 +498,64 @@
 
     .pillar h3 {
       font-family: var(--font-mono);
-      font-size: 1.2rem;
+      font-size: 1.5rem;
       font-weight: 600;
-      color: var(--text-bright);
-      letter-spacing: .08em;
-      margin-bottom: 1.25rem;
+      color: rgba(242,248,255,.98);
+      letter-spacing: .06em;
+      margin-bottom: 1.4rem;
     }
 
     .pillar p {
-      font-size: .94rem;
+      font-size: 1.08rem;
       font-weight: 300;
-      color: rgba(205,216,232,.85);
-      line-height: 1.95;
+      color: rgba(225,234,246,.94);
+      line-height: 1.85;
     }
 
     /* ================================ SLIDE 5 — COMING SOON ================================ */
     .slide-soon {
-      background: linear-gradient(180deg, #05080f 0%, #03050a 100%);
+      background:
+        radial-gradient(980px 300px at 70% 5%, rgba(75, 145, 245, .16) 0%, transparent 72%),
+        radial-gradient(700px 220px at 15% 85%, rgba(70, 214, 198, .10) 0%, transparent 70%),
+        linear-gradient(180deg, #05080f 0%, #03050a 100%);
       min-height: 72vh;
+    }
+
+    .slide-soon::before {
+      content: "";
+      position: absolute;
+      top: 12%;
+      left: 10%;
+      width: 80%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(126,184,255,.20) 50%, transparent 100%);
+      opacity: .6;
+      pointer-events: none;
     }
 
     .soon-label {
       font-family: var(--font-mono);
-      font-size: .78rem;
+      font-size: .88rem;
       letter-spacing: .3em;
       text-transform: uppercase;
-      color: rgba(170,196,232,.78);
+      color: rgba(196,216,242,.9);
       margin-bottom: 3rem;
     }
 
     .soon-en {
-      font-size: clamp(1.22rem, 2.4vw, 1.55rem);
+      font-size: clamp(1.34rem, 2.8vw, 1.75rem);
       font-weight: 400;
       color: rgba(242,247,255,.96);
-      line-height: 2;
+      line-height: 1.85;
       max-width: 760px;
       margin-bottom: 2rem;
     }
 
     .soon-jp {
-      font-size: 1.18rem;
+      font-size: 1.28rem;
       font-weight: 300;
       color: rgba(214,225,240,.92);
-      line-height: 2;
+      line-height: 1.85;
       max-width: 760px;
       margin-bottom: 3.5rem;
     }
@@ -573,15 +603,18 @@
       .hero-title { letter-spacing: .02em; }
       .pillars { grid-template-columns: 1fr; gap: 0; }
       .pillar { padding: 2rem 0.5rem; }
+      .pillars-label { font-size: .72rem; }
+      .pillar h3 { font-size: 1.26rem; }
+      .pillar p { font-size: .98rem; line-height: 1.82; }
       .hero-meta { gap: .4rem .8rem; }
       .context-jp { font-size: 1.03rem; line-height: 1.95; }
       .context-en { font-size: .9rem; }
       .context-ref { font-size: .76rem; }
       .statement-main { font-size: clamp(1.6rem, 8vw, 2.5rem); }
-      .soon-label { font-size: .72rem; }
-      .soon-en { font-size: 1.02rem; line-height: 1.85; }
-      .soon-jp { font-size: .96rem; line-height: 1.85; }
-      .soon-links { font-size: .82rem; }
+      .soon-label { font-size: .78rem; }
+      .soon-en { font-size: 1.08rem; line-height: 1.78; }
+      .soon-jp { font-size: 1.02rem; line-height: 1.78; }
+      .soon-links { font-size: .86rem; }
       .footer { font-size: .66rem; }
     }
   </style>
