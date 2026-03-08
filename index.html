@@ -7,23 +7,18 @@
   <meta name="description" content="MAGI: 日本語LLM評価のためのアーティファクト・ファーストな基盤設計。IEICE総合大会 2026。">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@200;300;400;500;600;700;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* === Reset === */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg:         #06080d;
-      --bg-deep:    #0b1020;
-      --bg-card:    #0c1018;
-      --glow:       rgba(120, 180, 255, .06);
-      --glow-cyan:  rgba(100, 220, 255, .04);
+      --bg:         #08090e;
       --accent:     #7eb8ff;
       --accent-dim: #3a6ea5;
-      --text:       #b8c4d4;
-      --text-dim:   #5c6a7e;
-      --text-bright:#e8edf5;
-      --border:     #151c2a;
+      --cyan:       #5ce0d8;
+      --text:       #c0cad8;
+      --text-dim:   #4a5568;
+      --text-bright:#edf0f7;
       --font-sans:  "Inter", "Noto Sans JP", -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono:  "JetBrains Mono", monospace;
     }
@@ -40,89 +35,131 @@
       overflow-x: hidden;
     }
 
-    a { color: var(--accent); text-decoration: none; transition: color .3s, opacity .3s; }
-    a:hover { opacity: .75; }
+    a { color: var(--accent); text-decoration: none; transition: opacity .3s; }
+    a:hover { opacity: .7; }
 
-    /* === Ambient glow === */
-    .ambient {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      background:
-        radial-gradient(ellipse 70% 50% at 50% 0%, rgba(90,160,255,.07) 0%, transparent 65%),
-        radial-gradient(ellipse 50% 60% at 30% 100%, rgba(80,200,240,.03) 0%, transparent 50%),
-        radial-gradient(ellipse 40% 30% at 80% 40%, rgba(140,180,255,.03) 0%, transparent 50%);
-      animation: ambientDrift 20s ease-in-out infinite alternate;
-    }
-    @keyframes ambientDrift {
-      0%   { opacity: .8; transform: scale(1) translateY(0); }
-      100% { opacity: 1;  transform: scale(1.03) translateY(-10px); }
-    }
-
-    /* === Fade-in on scroll === */
-    .fade-section {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity .8s ease, transform .8s ease;
-    }
-    .fade-section.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* === Hero === */
-    .hero {
+    /* ============================== Slide base ============================== */
+    .slide {
       position: relative;
-      z-index: 1;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
-      padding: 6rem 2rem 4rem;
+      padding: 6rem 2rem;
+      overflow: hidden;
+    }
+
+    /* ============================== Fade-in ============================== */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============================== SLIDE 1 — HERO ============================== */
+    .hero {
+      background: var(--bg);
+      z-index: 1;
+    }
+
+    /* Stage light: ribbons of color across the top */
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -30%;
+      left: -10%;
+      width: 120%;
+      height: 80%;
+      background:
+        radial-gradient(ellipse 80% 35% at 50% 0%,  rgba(70,140,255,.14) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 25% at 30% 10%, rgba(80,220,240,.09) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 20% at 75% 5%,  rgba(160,100,255,.07) 0%, transparent 55%);
+      filter: blur(40px);
+      pointer-events: none;
+      animation: lightDrift 16s ease-in-out infinite alternate;
+    }
+
+    /* Subtle haze / atmosphere */
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 50% 50%, rgba(100,160,255,.03) 0%, transparent 70%),
+        radial-gradient(ellipse 80% 50% at 50% 100%, rgba(8,9,14,.95) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    @keyframes lightDrift {
+      0%   { transform: translateX(0)   scaleX(1);   opacity: .85; }
+      50%  { transform: translateX(20px) scaleX(1.02); opacity: 1; }
+      100% { transform: translateX(-15px) scaleX(.98); opacity: .9; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-badge {
+      font-family: var(--font-mono);
+      font-size: .65rem;
+      font-weight: 400;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 3rem;
     }
 
     .hero-title {
-      font-size: clamp(4rem, 12vw, 9rem);
+      font-size: clamp(5rem, 15vw, 11rem);
       font-weight: 900;
-      letter-spacing: .04em;
+      letter-spacing: .05em;
       color: var(--text-bright);
-      line-height: 1;
-      margin-bottom: 1.5rem;
-      font-family: var(--font-sans);
+      line-height: .9;
+      margin-bottom: 1.2rem;
+      /* subtle text glow */
+      text-shadow:
+        0 0 80px rgba(100,160,255,.12),
+        0 0 160px rgba(100,160,255,.06);
     }
 
-    .hero-subtitle {
-      font-size: clamp(1.15rem, 3vw, 1.7rem);
+    .hero-sub {
+      font-size: clamp(1.1rem, 2.8vw, 1.65rem);
       font-weight: 500;
       color: var(--text-bright);
-      line-height: 1.5;
+      letter-spacing: .04em;
       margin-bottom: 2.5rem;
-      letter-spacing: .02em;
     }
 
     .hero-en {
-      font-size: clamp(.85rem, 1.8vw, 1.1rem);
+      font-size: clamp(.8rem, 1.5vw, 1rem);
       font-weight: 300;
       color: var(--text-dim);
-      line-height: 1.9;
-      letter-spacing: .04em;
-      max-width: 520px;
-      margin-bottom: 3rem;
+      line-height: 2;
+      letter-spacing: .05em;
+      margin-bottom: 2rem;
     }
     .hero-en strong {
       color: var(--text);
-      font-weight: 500;
+      font-weight: 400;
     }
 
     .hero-desc {
-      font-size: .95rem;
+      font-size: .8rem;
+      font-weight: 300;
       color: var(--text-dim);
-      max-width: 480px;
-      line-height: 1.9;
-      margin-bottom: 2rem;
+      letter-spacing: .06em;
+      margin-bottom: 2.5rem;
     }
 
     /* Meta row */
@@ -130,20 +167,16 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: .6rem 1.8rem;
+      align-items: center;
+      gap: .5rem 1.4rem;
       margin-bottom: 2.5rem;
       font-family: var(--font-mono);
-      font-size: .75rem;
-      letter-spacing: .06em;
+      font-size: .68rem;
+      letter-spacing: .05em;
       color: var(--text-dim);
     }
-    .hero-meta a { color: var(--accent); }
-
-    .meta-divider {
-      width: 1px;
-      background: var(--border);
-      align-self: stretch;
-    }
+    .hero-meta a { color: var(--accent); font-weight: 400; }
+    .meta-dot { opacity: .3; }
 
     /* CTA */
     .hero-cta {
@@ -151,25 +184,23 @@
       gap: .75rem;
       flex-wrap: wrap;
       justify-content: center;
+      margin-bottom: 2rem;
     }
 
     .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: .4em;
-      padding: .55em 1.4em;
-      font-size: .8rem;
-      font-weight: 500;
-      letter-spacing: .04em;
-      border-radius: 6px;
-      border: 1px solid var(--border);
+      padding: .5em 1.3em;
+      font-size: .72rem;
+      font-weight: 400;
+      letter-spacing: .06em;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,.08);
       background: transparent;
       color: var(--text);
       cursor: pointer;
       transition: all .3s;
     }
     .btn:hover {
-      border-color: var(--accent-dim);
+      border-color: rgba(126,184,255,.3);
       color: var(--accent);
       opacity: 1;
     }
@@ -177,297 +208,340 @@
     /* Scroll hint */
     .scroll-hint {
       position: absolute;
-      bottom: 2.5rem;
+      bottom: 2rem;
       left: 50%;
       transform: translateX(-50%);
-      color: var(--text-dim);
-      font-size: .65rem;
+      z-index: 2;
       font-family: var(--font-mono);
-      letter-spacing: .15em;
+      font-size: .55rem;
+      letter-spacing: .25em;
       text-transform: uppercase;
+      color: var(--text-dim);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: .6rem;
+      gap: .5rem;
       animation: pulse 3s ease-in-out infinite;
     }
-    .scroll-hint svg {
-      width: 16px; height: 16px;
-      stroke: var(--text-dim);
-      stroke-width: 1.5;
-    }
-    @keyframes pulse { 0%,100% { opacity: .3; } 50% { opacity: .8; } }
+    .scroll-hint svg { width: 14px; height: 14px; stroke: var(--text-dim); stroke-width: 1.5; }
+    @keyframes pulse { 0%,100% { opacity: .2; } 50% { opacity: .7; } }
 
-    /* === Section base === */
-    .section {
-      position: relative;
-      z-index: 1;
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 8rem 2rem;
+    /* ============================== SLIDE 2 — BIG STATEMENT ============================== */
+    .slide-statement {
+      background: linear-gradient(180deg, var(--bg) 0%, #0a0c14 100%);
     }
 
-    .section-wide {
-      max-width: 900px;
-    }
-
-    /* === Quote section === */
-    .quote-section {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 10rem 2rem;
-    }
-
-    .quote-text {
-      font-size: clamp(1.2rem, 3vw, 1.65rem);
-      font-weight: 400;
+    .statement-main {
+      font-size: clamp(1.3rem, 3.5vw, 2rem);
+      font-weight: 500;
       color: var(--text-bright);
-      line-height: 2;
+      line-height: 1.8;
       max-width: 600px;
-      margin: 0 auto;
+      margin-bottom: 2.5rem;
     }
 
-    .quote-text em {
+    .statement-main em {
       font-style: normal;
       color: var(--accent);
     }
 
-    /* === Context section === */
-    .context-text {
-      font-size: .95rem;
-      color: var(--text);
-      line-height: 2;
-      text-align: center;
-      max-width: 560px;
-      margin: 0 auto 2rem;
+    .statement-sub {
+      font-size: .85rem;
+      font-weight: 300;
+      color: var(--text-dim);
+      line-height: 2.2;
+      max-width: 520px;
     }
 
-    .reference {
-      text-align: center;
-      font-size: .75rem;
+    /* ============================== SLIDE 3 — CONTEXT ============================== */
+    .slide-context {
+      background: linear-gradient(180deg, #0a0c14 0%, #090b12 100%);
+    }
+
+    .context-label {
+      font-family: var(--font-mono);
+      font-size: .6rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 2.5rem;
+    }
+
+    .context-jp {
+      font-size: clamp(.9rem, 2vw, 1.05rem);
+      font-weight: 400;
+      color: var(--text);
+      line-height: 2.2;
+      max-width: 520px;
+      margin-bottom: 2rem;
+    }
+
+    .context-en {
+      font-size: .82rem;
+      font-weight: 300;
+      color: var(--text-dim);
+      line-height: 2;
+      max-width: 520px;
+      margin-bottom: 2.5rem;
+      font-style: italic;
+    }
+
+    .context-ref {
+      font-size: .68rem;
       color: var(--text-dim);
       line-height: 1.8;
-      font-style: italic;
-      max-width: 560px;
-      margin: 0 auto;
+      opacity: .7;
+      max-width: 520px;
+    }
+    .context-ref cite { font-style: italic; }
+
+    /* ============================== SLIDE 4 — PILLARS ============================== */
+    .slide-pillars {
+      background: linear-gradient(180deg, #090b12 0%, #080a10 100%);
     }
 
-    /* === 3 Cards === */
-    .cards-label {
-      text-align: center;
+    .pillars-label {
       font-family: var(--font-mono);
-      font-size: .7rem;
-      letter-spacing: .2em;
+      font-size: .6rem;
+      letter-spacing: .25em;
       text-transform: uppercase;
       color: var(--text-dim);
       margin-bottom: 3rem;
     }
 
-    .cards {
+    .pillars {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
+      gap: 2rem;
+      max-width: 840px;
+      width: 100%;
     }
 
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2.5rem 1.75rem;
-      text-align: center;
+    .pillar {
+      padding: 2.5rem 1.5rem;
+      border: 1px solid rgba(255,255,255,.04);
+      border-radius: 10px;
+      background: rgba(255,255,255,.015);
       transition: border-color .3s;
     }
-    .card:hover { border-color: var(--accent-dim); }
+    .pillar:hover { border-color: rgba(126,184,255,.15); }
 
-    .card h3 {
+    .pillar h3 {
       font-family: var(--font-mono);
-      font-size: 1rem;
+      font-size: .9rem;
       font-weight: 600;
       color: var(--text-bright);
-      letter-spacing: .06em;
-      margin-bottom: .75rem;
+      letter-spacing: .08em;
+      margin-bottom: .8rem;
     }
 
-    .card p {
-      font-size: .82rem;
+    .pillar p {
+      font-size: .78rem;
+      font-weight: 300;
       color: var(--text-dim);
-      line-height: 1.8;
+      line-height: 1.9;
     }
 
-    /* === Coming soon === */
-    .coming-soon {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 10rem 2rem 6rem;
+    /* ============================== SLIDE 5 — COMING SOON ============================== */
+    .slide-soon {
+      background: linear-gradient(180deg, #080a10 0%, var(--bg) 100%);
+      min-height: 80vh;
     }
 
-    .coming-soon-label {
+    .soon-label {
       font-family: var(--font-mono);
-      font-size: .7rem;
-      letter-spacing: .2em;
+      font-size: .6rem;
+      letter-spacing: .25em;
       text-transform: uppercase;
       color: var(--text-dim);
+      margin-bottom: 2.5rem;
+    }
+
+    .soon-en {
+      font-size: clamp(.85rem, 1.8vw, 1rem);
+      font-weight: 300;
+      color: var(--text);
+      line-height: 2;
+      max-width: 520px;
       margin-bottom: 1.5rem;
     }
 
-    .coming-soon-text {
-      font-size: .9rem;
+    .soon-jp {
+      font-size: .85rem;
+      font-weight: 300;
       color: var(--text-dim);
       line-height: 2;
-      max-width: 480px;
-      margin: 0 auto;
+      max-width: 520px;
+      margin-bottom: 3rem;
     }
 
-    .coming-soon-text a {
-      border-bottom: 1px solid var(--accent-dim);
-      padding-bottom: 1px;
+    .soon-links {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: .72rem;
+      letter-spacing: .06em;
     }
+    .soon-links a {
+      padding-bottom: 2px;
+      border-bottom: 1px solid rgba(126,184,255,.2);
+      transition: border-color .3s;
+    }
+    .soon-links a:hover { border-color: var(--accent); opacity: 1; }
 
-    /* === Footer === */
+    /* ============================== Footer ============================== */
     .footer {
       position: relative;
       z-index: 1;
       max-width: 720px;
       margin: 0 auto;
-      padding: 3rem 2rem;
-      border-top: 1px solid var(--border);
+      padding: 2.5rem 2rem;
+      border-top: 1px solid rgba(255,255,255,.04);
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
       gap: 1rem;
-      font-size: .72rem;
+      font-size: .62rem;
       color: var(--text-dim);
       font-family: var(--font-mono);
-      letter-spacing: .04em;
+      letter-spacing: .06em;
     }
+    .footer-links { display: flex; gap: 1.5rem; }
 
-    .footer-links {
-      display: flex;
-      gap: 1.5rem;
-    }
-
-    /* === Responsive === */
+    /* ============================== Responsive ============================== */
     @media (max-width: 640px) {
-      .hero { padding: 5rem 1.5rem 3rem; }
-      .hero-title { margin-bottom: 1rem; }
-      .cards { grid-template-columns: 1fr; gap: 1rem; }
-      .section { padding: 5rem 1.5rem; }
-      .quote-section { padding: 6rem 1.5rem; }
-      .coming-soon { padding: 6rem 1.5rem 4rem; }
-      .hero-meta { gap: .4rem 1rem; }
+      .slide { padding: 5rem 1.5rem; }
+      .hero-title { letter-spacing: .02em; }
+      .pillars { grid-template-columns: 1fr; gap: 1.2rem; }
+      .hero-meta { gap: .4rem .8rem; }
+      .hero-badge { margin-bottom: 2rem; }
     }
   </style>
 </head>
 <body>
 
-<!-- Ambient background glow -->
-<div class="ambient"></div>
+<!-- ═══════════════════════════════════ SLIDE 1 / HERO ═══ -->
+<section class="slide hero">
+  <div class="hero-content">
 
-<!-- ══════════════════════════════ Hero ══════ -->
-<section class="hero">
+    <div class="hero-badge">IEICE General Conference 2026</div>
 
-  <h1 class="hero-title">MAGI</h1>
+    <h1 class="hero-title">MAGI</h1>
 
-  <p class="hero-subtitle">AIが検証可能な科学であるために。</p>
+    <p class="hero-sub">AIが検証可能な科学であるために。</p>
 
-  <div class="hero-en">
-    <strong>Reproducibility is not an afterthought.</strong><br>
-    <strong>It is the foundation.</strong>
-  </div>
+    <div class="hero-en">
+      <strong>Reproducibility is not an afterthought.</strong><br>
+      <strong>It is the foundation.</strong>
+    </div>
 
-  <p class="hero-desc">
-    日本語LLM評価のための、アーティファクト・ファーストな基盤設計。<br>
-    詳細は発表後に順次公開予定です。
-  </p>
+    <p class="hero-desc">Artifact-first infrastructure for reproducible Japanese LLM evaluation</p>
 
-  <div class="hero-meta">
-    <span>Paper submitted: 2026-01-01</span>
-    <div class="meta-divider"></div>
-    <span>IEICE総合大会 2026</span>
-    <div class="meta-divider"></div>
-    <span>Presentation: 2026-03-12</span>
-    <div class="meta-divider"></div>
-    <a href="https://zenodo.org/records/16535944" target="_blank" rel="noopener">Zenodo record</a>
-    <span style="color:var(--text-dim); opacity:.6;">Uploaded on July 28, 2025</span>
-  </div>
+    <div class="hero-meta">
+      <span>Paper submitted: 2026-01-01</span>
+      <span class="meta-dot">&middot;</span>
+      <span>Presentation: 2026-03-12</span>
+      <span class="meta-dot">&middot;</span>
+      <a href="https://zenodo.org/records/16535944" target="_blank" rel="noopener">Zenodo record</a>
+      <span class="meta-dot">&middot;</span>
+      <span style="opacity:.5">Uploaded on July 28, 2025</span>
+    </div>
 
-  <div class="hero-cta">
-    <a href="#context" class="btn">Overview</a>
-    <a href="#coming-soon" class="btn">Coming Soon</a>
-    <a href="https://aets-magi.github.io/vega-hbmx-pages/general-audience.html" class="btn">未来の道具を、みんなの手に。</a>
-    <a href="https://github.com/AETS-MAGI" class="btn">GitHub</a>
+    <div class="hero-cta">
+      <a href="#context" class="btn">Overview</a>
+      <a href="https://zenodo.org/records/16535944" class="btn" target="_blank" rel="noopener">Zenodo</a>
+      <a href="https://github.com/AETS-MAGI" class="btn" target="_blank" rel="noopener">GitHub</a>
+    </div>
+
   </div>
 
   <div class="scroll-hint">
+    <span>Scroll</span>
     <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
   </div>
 </section>
 
-<!-- ══════════════════════════════ Quote ══════ -->
-<section class="quote-section fade-section">
-  <p class="quote-text">
-    評価は、再現できてはじめて<em>知識</em>になる。
-  </p>
+<!-- ═══════════════════════════════════ SLIDE 2 / BIG STATEMENT ═══ -->
+<section class="slide slide-statement">
+  <div class="fade-in">
+    <p class="statement-main">
+      評価は、再現できてはじめて<em>知識</em>になる。
+    </p>
+    <p class="statement-sub">
+      結果だけが残り、過程が消える評価に、科学としての価値はない。<br>
+      MAGIは、その問題に基盤設計で答える。
+    </p>
+  </div>
 </section>
 
-<!-- ══════════════════════════════ Context ══════ -->
-<section class="section fade-section" id="context">
-  <p class="context-text">
-    推論の検証可能性をめぐる近年の問題提起に呼応し、<br>
-    本研究は日本語LLM評価を再現可能な実験として<br>
-    残すための基盤設計を扱います。
-  </p>
-  <p class="context-text" style="font-size:.88rem; color:var(--text-dim);">
-    In dialogue with recent concerns around the verifiability of reasoning,<br>
-    this work focuses on infrastructure for reproducible Japanese LLM evaluation.
-  </p>
-  <p class="reference">
-    Inspired in part by Elchanan Mossel,
-    <cite>The Refutability Gap: Challenges in Validating Reasoning by Large Language Models</cite>
-    (February 10, 2026).
-  </p>
+<!-- ═══════════════════════════════════ SLIDE 3 / CONTEXT ═══ -->
+<section class="slide slide-context" id="context">
+  <div class="fade-in">
+    <div class="context-label">Context</div>
+    <p class="context-jp">
+      推論の検証可能性をめぐる近年の問題提起に呼応し、<br>
+      本研究は日本語LLM評価を再現可能な実験として<br>
+      残すための基盤設計を扱う。
+    </p>
+    <p class="context-en">
+      In dialogue with recent concerns around the verifiability of reasoning,<br>
+      this work focuses on infrastructure for reproducible Japanese LLM evaluation.
+    </p>
+    <p class="context-ref">
+      Inspired in part by Elchanan Mossel,<br>
+      <cite>The Refutability Gap: Challenges in Validating Reasoning by Large Language Models</cite><br>
+      (February 10, 2026)
+    </p>
+  </div>
 </section>
 
-<!-- ══════════════════════════════ Three pillars ══════ -->
-<section class="section section-wide fade-section" id="pillars">
-  <div class="cards-label">Pillars</div>
-  <div class="cards">
-    <div class="card">
-      <h3>Spec</h3>
-      <p>実験の定義は spec で一意に定まる。<br>同一 spec は同一条件を保証する。</p>
-    </div>
-    <div class="card">
-      <h3>Artifacts</h3>
-      <p>成功も失敗も成果物として保存する。<br>主張はすべて証拠にリンクできる。</p>
-    </div>
-    <div class="card">
-      <h3>Verification</h3>
-      <p>環境・仕様・結果を統一記録し、<br>暗号学的に改変を検出できる。</p>
+<!-- ═══════════════════════════════════ SLIDE 4 / PILLARS ═══ -->
+<section class="slide slide-pillars">
+  <div class="fade-in">
+    <div class="pillars-label">Pillars</div>
+    <div class="pillars">
+      <div class="pillar">
+        <h3>Spec</h3>
+        <p>実験の定義を一意にし、<br>同一条件の再実行を保証する。</p>
+      </div>
+      <div class="pillar">
+        <h3>Artifacts</h3>
+        <p>成功も失敗も<br>証拠として残す。</p>
+      </div>
+      <div class="pillar">
+        <h3>Verification</h3>
+        <p>条件・結果・整合性を<br>検証可能にする。</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════ Coming soon ══════ -->
-<section class="coming-soon fade-section" id="coming-soon">
-  <div class="coming-soon-label">Coming Soon</div>
-  <p class="coming-soon-text">
-    アーキテクチャ、アーティファクト構造、評価パイプラインの詳細は<br>
-    発表後に順次公開予定です。
-  </p>
-  <p class="coming-soon-text" style="margin-top:1rem; font-size:.8rem;">
-    Architecture, artifact structure, and pipeline details<br>
-    will be published after the presentation.
-  </p>
+<!-- ═══════════════════════════════════ SLIDE 5 / COMING SOON ═══ -->
+<section class="slide slide-soon" id="coming-soon">
+  <div class="fade-in">
+    <div class="soon-label">Coming Soon</div>
+    <p class="soon-en">
+      Architecture, artifacts, and pipeline details<br>
+      will be published after the presentation.
+    </p>
+    <p class="soon-jp">
+      構成図、成果物構造、評価パイプラインの詳細は<br>
+      発表後に順次公開予定です。
+    </p>
+    <div class="soon-links">
+      <a href="https://zenodo.org/records/16535944" target="_blank" rel="noopener">Zenodo</a>
+      <a href="https://github.com/AETS-MAGI" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://aets-magi.github.io/vega-hbmx-pages/general-audience.html">未来の道具を、みんなの手に。</a>
+    </div>
+  </div>
 </section>
 
-<!-- ══════════════════════════════ Footer ══════ -->
+<!-- ═══════════════════════════════════ Footer ═══ -->
 <footer class="footer">
-  <div>
-    MAGI &middot; IEICE 2026 &middot; 伊藤 あきら
-  </div>
+  <div>MAGI &middot; IEICE 2026 &middot; 伊藤 あきら</div>
   <div class="footer-links">
     <a href="https://zenodo.org/records/16535944">Zenodo</a>
     <a href="https://aets-magi.github.io/vega-hbmx-pages/general-audience.html">一般向け</a>
@@ -475,12 +549,12 @@
   </div>
 </footer>
 
-<!-- ══════════════════════════════ Scroll fade-in ══════ -->
+<!-- ═══════════════════════════════════ Scroll observer ═══ -->
 <script>
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.15 });
-  document.querySelectorAll('.fade-section').forEach(el => io.observe(el));
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
 </script>
 
 </body>
