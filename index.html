@@ -95,6 +95,27 @@
       overflow: hidden;
     }
 
+    .hero-stage::before {
+      content: "";
+      position: absolute;
+      top: 8%;
+      right: -18%;
+      width: 70%;
+      height: 22%;
+      background: linear-gradient(
+        100deg,
+        transparent 0%,
+        rgba(86, 219, 255, 0.00) 24%,
+        rgba(86, 219, 255, 0.20) 42%,
+        rgba(126, 184, 255, 0.12) 55%,
+        rgba(86, 219, 255, 0.00) 72%,
+        transparent 100%
+      );
+      filter: blur(18px);
+      transform: rotate(-4deg);
+      animation: ribbonDrift4 16s ease-in-out infinite alternate;
+    }
+
     /* Main diagonal ribbon — blue/cyan sweeping from top-left */
     .hero-stage .ribbon-1 {
       position: absolute;
@@ -105,12 +126,12 @@
       background: linear-gradient(
         135deg,
         transparent 20%,
-        rgba(60,140,255,.10) 35%,
-        rgba(70,200,230,.07) 42%,
-        rgba(60,140,255,.04) 50%,
+        rgba(60,140,255,.16) 35%,
+        rgba(70,200,230,.11) 42%,
+        rgba(60,140,255,.06) 50%,
         transparent 60%
       );
-      filter: blur(30px);
+      filter: blur(22px);
       transform: rotate(-6deg);
       animation: ribbonDrift1 18s ease-in-out infinite alternate;
     }
@@ -125,11 +146,11 @@
       background: linear-gradient(
         -120deg,
         transparent 30%,
-        rgba(140,80,220,.06) 42%,
-        rgba(180,100,255,.04) 50%,
+        rgba(140,80,220,.10) 42%,
+        rgba(180,100,255,.06) 50%,
         transparent 60%
       );
-      filter: blur(40px);
+      filter: blur(28px);
       transform: rotate(4deg);
       animation: ribbonDrift2 22s ease-in-out infinite alternate;
     }
@@ -143,10 +164,10 @@
       height: 50%;
       background: radial-gradient(
         ellipse 60% 40% at 50% 30%,
-        rgba(200,170,100,.03) 0%,
+        rgba(200,170,100,.05) 0%,
         transparent 70%
       );
-      filter: blur(50px);
+      filter: blur(42px);
       animation: ribbonDrift3 14s ease-in-out infinite alternate;
     }
 
@@ -159,10 +180,10 @@
       height: 40%;
       background: radial-gradient(
         ellipse 80% 60% at 50% 50%,
-        rgba(80,150,255,.05) 0%,
+        rgba(80,150,255,.08) 0%,
         transparent 70%
       );
-      filter: blur(60px);
+      filter: blur(46px);
     }
 
     /* Bottom darken — stage floor fade */
@@ -186,6 +207,11 @@
     @keyframes ribbonDrift3 {
       0%   { opacity: .5; transform: scale(1); }
       100% { opacity: .8; transform: scale(1.05); }
+    }
+
+    @keyframes ribbonDrift4 {
+      0%   { opacity: .70; transform: rotate(-4deg) translateX(0); }
+      100% { opacity: 1; transform: rotate(-2deg) translateX(-24px); }
     }
 
     /* ---- Hero content ---- */
@@ -592,7 +618,7 @@
 <section class="slide slide-statement">
   <div class="fade-in">
     <p class="statement-main">
-      評価は、再現できてはじめて<em>知識</em>になる。
+      評価は、再現できてはじめて<br><em>知識</em>になる。
     </p>
     <p class="statement-sub">
       結果だけが残り、過程が消える評価に、科学としての価値はない。<br>
