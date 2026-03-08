@@ -41,7 +41,6 @@
     /* ================================ SLIDE frame ================================ */
     .slide {
       position: relative;
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -49,6 +48,18 @@
       text-align: center;
       padding: 7rem 2rem;
       overflow: hidden;
+    }
+
+    .hero { min-height: 100vh; }
+
+    .slide-statement,
+    .slide-pillars,
+    .slide-soon {
+      min-height: 72vh;
+    }
+
+    .slide-context {
+      min-height: 62vh;
     }
 
     /* ================================ Fade-in ================================ */
@@ -61,6 +72,20 @@
 
     /* ================================ HERO ================================ */
     .hero { background: var(--bg); z-index: 1; }
+
+    .section-divider {
+      width: min(880px, 82vw);
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255,255,255,0.08) 20%,
+        rgba(126,184,255,0.18) 50%,
+        rgba(255,255,255,0.08) 80%,
+        transparent 100%
+      );
+      margin: 0 auto;
+    }
 
     /* ---- Stage lighting: diagonal light ribbons ---- */
     .hero-stage {
@@ -300,27 +325,33 @@
     }
 
     .statement-main {
-      font-size: clamp(1.6rem, 4.5vw, 2.8rem);
+      font-size: clamp(2rem, 5vw, 3.6rem);
       font-weight: 500;
       color: var(--text-bright);
-      line-height: 1.9;
-      max-width: 700px;
-      margin-bottom: 3rem;
-      letter-spacing: .02em;
+      line-height: 1.6;
+      max-width: 900px;
+      margin-bottom: 2.2rem;
+      letter-spacing: .01em;
     }
     .statement-main em { font-style: normal; color: var(--accent); }
 
     .statement-sub {
-      font-size: .85rem;
+      font-size: .95rem;
       font-weight: 300;
       color: var(--text-dim);
-      line-height: 2.4;
-      max-width: 520px;
+      line-height: 2.1;
+      max-width: 600px;
     }
 
     /* ================================ SLIDE 3 — CONTEXT ================================ */
     .slide-context {
       background: linear-gradient(180deg, #07090f 0%, #060810 100%);
+    }
+
+    .slide-context .fade-in {
+      width: 100%;
+      max-width: 720px;
+      text-align: left;
     }
 
     .context-label {
@@ -360,6 +391,14 @@
     }
     .context-ref cite { font-style: italic; }
 
+    .context-label,
+    .context-jp,
+    .context-en,
+    .context-ref {
+      margin-left: 0;
+      margin-right: 0;
+    }
+
     /* ================================ SLIDE 4 — PILLARS ================================ */
     .slide-pillars {
       background: linear-gradient(180deg, #060810 0%, #050709 100%);
@@ -393,24 +432,24 @@
 
     .pillar h3 {
       font-family: var(--font-mono);
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: 600;
       color: var(--text-bright);
-      letter-spacing: .1em;
-      margin-bottom: 1.2rem;
+      letter-spacing: .08em;
+      margin-bottom: 1.25rem;
     }
 
     .pillar p {
-      font-size: .8rem;
+      font-size: .86rem;
       font-weight: 300;
       color: var(--text-dim);
-      line-height: 2;
+      line-height: 2.05;
     }
 
     /* ================================ SLIDE 5 — COMING SOON ================================ */
     .slide-soon {
       background: linear-gradient(180deg, #050709 0%, var(--bg) 100%);
-      min-height: 85vh;
+      min-height: 72vh;
     }
 
     .soon-label {
@@ -553,6 +592,8 @@
   </div>
 </section>
 
+<div class="section-divider" aria-hidden="true"></div>
+
 <!-- ═══════════════════════════════════ SLIDE 3 / CONTEXT ═══ -->
 <section class="slide slide-context" id="context">
   <div class="fade-in">
@@ -574,6 +615,8 @@
   </div>
 </section>
 
+<div class="section-divider" aria-hidden="true"></div>
+
 <!-- ═══════════════════════════════════ SLIDE 4 / PILLARS ═══ -->
 <section class="slide slide-pillars">
   <div class="fade-in">
@@ -581,15 +624,15 @@
     <div class="pillars">
       <div class="pillar">
         <h3>Spec</h3>
-        <p>実験の定義を一意にし、<br>同一条件の再実行を保証する。</p>
+        <p>実験の定義を一意にし、<br>同一条件の再実行を保証する。<br>評価の前提を揺らさない。</p>
       </div>
       <div class="pillar">
         <h3>Artifacts</h3>
-        <p>成功も失敗も<br>証拠として残す。</p>
+        <p>成功も失敗も証拠として残す。<br>主張を必ず追跡可能にする。<br>過程を失わない。</p>
       </div>
       <div class="pillar">
         <h3>Verification</h3>
-        <p>条件・結果・整合性を<br>検証可能にする。</p>
+        <p>条件・結果・整合性を検証可能にする。<br>再現性を確認できる形式で、<br>成果物を評価する。</p>
       </div>
     </div>
   </div>
