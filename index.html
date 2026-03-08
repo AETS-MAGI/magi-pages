@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAGI — LLM評価のためのアーティファクト・ファーストな基盤設計</title>
+  <meta name="description" content="MAGI: 日本語LLM評価における再現可能な検証基盤。IEICE総合大会 2026発表。">
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:        #0b0e14;
+      --bg-card:   #111621;
+      --bg-code:   #0d1117;
+      --accent:    #58a6ff;
+      --accent-dim:#264f78;
+      --green:     #3fb950;
+      --orange:    #d29922;
+      --red:       #f85149;
+      --text:      #c9d1d9;
+      --text-dim:  #8b949e;
+      --text-bright:#e6edf3;
+      --border:    #21262d;
+      --font-sans: "Inter", "Noto Sans JP", -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: "JetBrains Mono", "Fira Code", "Source Code Pro", monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.75;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent); text-decoration: none; transition: opacity .2s; }
+    a:hover { opacity: .8; }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 4rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 0%, rgba(88,166,255,.08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(63,185,80,.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      font-size: .75rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent-dim);
+      border-radius: 999px;
+      padding: .35em 1.2em;
+      margin-bottom: 2rem;
+      font-family: var(--font-mono);
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      color: var(--text-bright);
+      line-height: 1.3;
+      max-width: 800px;
+      margin-bottom: .75rem;
+    }
+
+    .hero h1 .mono {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .hero .subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--text-dim);
+      max-width: 600px;
+      margin-bottom: 2.5rem;
+      font-style: italic;
+    }
+
+    .hero-meta {
+      font-size: .85rem;
+      color: var(--text-dim);
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem 2rem;
+      justify-content: center;
+      margin-bottom: 2.5rem;
+    }
+    .hero-meta span { white-space: nowrap; }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5em;
+      padding: .65em 1.6em;
+      font-size: .9rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-bright);
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn:hover { border-color: var(--accent); color: var(--accent); opacity: 1; }
+    .btn-primary { background: var(--accent); color: #0b0e14; border-color: var(--accent); }
+    .btn-primary:hover { background: #79bbff; color: #0b0e14; }
+
+    /* ── Scroll indicator ── */
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .4rem;
+      color: var(--text-dim);
+      font-size: .75rem;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .scroll-hint svg { width: 20px; height: 20px; stroke: var(--text-dim); }
+    @keyframes pulse { 0%,100% { opacity: .4; } 50% { opacity: 1; } }
+
+    /* ── Section ── */
+    .section {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: .75rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .75rem;
+    }
+
+    .section h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: 1.5rem;
+      line-height: 1.3;
+    }
+
+    .section p, .section li {
+      color: var(--text);
+      line-height: 1.85;
+    }
+
+    .section p + p { margin-top: 1rem; }
+
+    .divider {
+      max-width: 960px;
+      margin: 0 auto;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Manifesto / Philosophy ── */
+    .philosophy-quote {
+      border-left: 3px solid var(--accent-dim);
+      padding: 1.5rem 2rem;
+      background: var(--bg-card);
+      border-radius: 0 8px 8px 0;
+      margin: 2rem 0;
+      font-size: 1.05rem;
+      color: var(--text-bright);
+      line-height: 1.9;
+    }
+
+    .philosophy-quote em {
+      color: var(--accent);
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    /* ── Principle cards ── */
+    .principles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-top: 2rem;
+    }
+
+    .principle-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      transition: border-color .2s;
+    }
+    .principle-card:hover { border-color: var(--accent-dim); }
+
+    .principle-card .num {
+      font-family: var(--font-mono);
+      font-size: .8rem;
+      color: var(--accent);
+      margin-bottom: .5rem;
+    }
+
+    .principle-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: .75rem;
+    }
+
+    .principle-card p {
+      font-size: .9rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    /* ── Architecture diagram ── */
+    .arch-container {
+      margin: 2.5rem 0;
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      overflow-x: auto;
+    }
+
+    .arch-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5rem;
+      min-width: 600px;
+    }
+
+    .arch-plane {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      position: relative;
+    }
+    .arch-plane.control  { border-color: var(--accent-dim); }
+    .arch-plane.compute  { border-color: rgba(63,185,80,.3); }
+    .arch-plane.knowledge { border-color: rgba(210,153,34,.3); }
+
+    .arch-plane .plane-label {
+      font-family: var(--font-mono);
+      font-size: .7rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: .2em .7em;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: .75rem;
+    }
+    .control  .plane-label { color: var(--accent); background: rgba(88,166,255,.1); }
+    .compute  .plane-label { color: var(--green);  background: rgba(63,185,80,.1); }
+    .knowledge .plane-label { color: var(--orange); background: rgba(210,153,34,.1); }
+
+    .arch-plane h4 {
+      font-size: .95rem;
+      color: var(--text-bright);
+      margin-bottom: .5rem;
+    }
+
+    .arch-plane ul {
+      list-style: none;
+      font-size: .8rem;
+      color: var(--text-dim);
+    }
+    .arch-plane li { padding: .15em 0; }
+    .arch-plane li::before {
+      content: "›";
+      margin-right: .5em;
+      color: var(--text-dim);
+    }
+
+    /* ── Artifact tree ── */
+    .artifact-tree {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+      font-family: var(--font-mono);
+      font-size: .85rem;
+      line-height: 1.8;
+      color: var(--text-dim);
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .artifact-tree .dir  { color: var(--accent); }
+    .artifact-tree .file { color: var(--text); }
+    .artifact-tree .comment { color: var(--text-dim); font-style: italic; }
+
+    /* ── Timeline ── */
+    .timeline { margin-top: 2rem; }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 1.5rem;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-date {
+      font-family: var(--font-mono);
+      font-size: .8rem;
+      color: var(--accent);
+      padding-top: .15rem;
+    }
+    .timeline-content h4 {
+      font-size: .95rem;
+      color: var(--text-bright);
+      margin-bottom: .25rem;
+    }
+    .timeline-content p {
+      font-size: .85rem;
+      color: var(--text-dim);
+    }
+
+    /* ── Status badge ── */
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: .35em;
+      font-family: var(--font-mono);
+      font-size: .75rem;
+      padding: .2em .7em;
+      border-radius: 4px;
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .status-active  { background: rgba(63,185,80,.1); color: var(--green); }
+    .status-active .status-dot { background: var(--green); }
+    .status-wip     { background: rgba(210,153,34,.1); color: var(--orange); }
+    .status-wip .status-dot { background: var(--orange); }
+
+    /* ── Footer ── */
+    .footer {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      font-size: .8rem;
+      color: var(--text-dim);
+    }
+    .footer-links { display: flex; gap: 1.5rem; }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .arch-grid { grid-template-columns: 1fr; min-width: 0; }
+      .timeline-item { grid-template-columns: 1fr; gap: .5rem; }
+      .hero h1 { font-size: 1.75rem; }
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════ Hero ═══ -->
+<section class="hero" id="top">
+  <span class="hero-badge">IEICE 総合大会 2026</span>
+
+  <h1>
+    <span class="mono">MAGI</span> — LLM評価のための<br>
+    アーティファクト・ファーストな基盤設計
+  </h1>
+
+  <p class="subtitle">〜AIが検証可能な科学であるために〜</p>
+
+  <div class="hero-meta">
+    <span>伊藤 あきら</span>
+    <span>2026年3月12日 発表</span>
+    <span>日本語LLM評価・再現可能性</span>
+  </div>
+
+  <div class="hero-actions">
+    <a href="#philosophy" class="btn btn-primary">設計思想を読む</a>
+    <a href="https://aets-magi.github.io/vega-hbmx-pages/general-audience.html" class="btn">未来の道具を、みんなの手に。→</a>
+    <a href="https://github.com/AETS-MAGI" class="btn">GitHub →</a>
+  </div>
+
+  <div class="scroll-hint">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════ Philosophy ═══ -->
+<hr class="divider">
+<section class="section" id="philosophy">
+  <div class="section-label">Philosophy</div>
+  <h2>なぜ「評価基盤」が必要なのか</h2>
+
+  <p>
+    大規模言語モデル（LLM）の性能評価は、いまや研究の基本動作になりつつある。
+    しかし「スコアが出た」とき、私たちは本当にそれを<strong>信じてよい</strong>のだろうか。
+  </p>
+
+  <div class="philosophy-quote">
+    結果だけが残り、過程が消える評価に、<em>科学としての価値はない</em>。<br>
+    私たちが追うべきは最高スコアではなく、<em>同じ条件で、誰でも、もう一度再現できること</em>だ。
+  </div>
+
+  <p>
+    GPU の世代、ドライバのバージョン、推論バックエンド、生成パラメータ——
+    日本語LLM評価はこれらの「見えない変数」の影響を受けやすい。
+    スコアの数字だけを比べる行為は、異なる実験条件を同列に並べる危険を常にはらんでいる。
+  </p>
+  <p>
+    MAGI は、この問題に対して<strong>仕組みで答える</strong>。
+    評価の「実行環境・仕様・結果・失敗」を不可分な成果物（Artifact）として一体保存し、
+    後から誰が見ても追跡・再現できる基盤を構築する。
+  </p>
+</section>
+
+<!-- ════════════════════════════════════════════════ Principles ═══ -->
+<hr class="divider">
+<section class="section" id="principles">
+  <div class="section-label">Design Principles</div>
+  <h2>4つの設計原則</h2>
+
+  <div class="principles">
+    <div class="principle-card">
+      <div class="num">01</div>
+      <h3>Spec is Canonical</h3>
+      <p>
+        実験の定義は spec.json で一意に定まる。
+        同一 spec は同一条件での再実行を保証する。
+        曖昧な「設定ファイル」ではなく、実験の<em>契約書</em>として機能する。
+      </p>
+    </div>
+    <div class="principle-card">
+      <div class="num">02</div>
+      <h3>Artifacts-first</h3>
+      <p>
+        成功も失敗も、成果物（Artifact）として保存する。
+        主張はすべて Artifact にリンク可能でなければならない。
+        「動いた」ではなく「証拠がある」が基準。
+      </p>
+    </div>
+    <div class="principle-card">
+      <div class="num">03</div>
+      <h3>Never Lose Evidence</h3>
+      <p>
+        失敗は資産である。ビルドエラー、OOM、数値的不整合——
+        すべてを分類・蓄積し、再現性の改善に活かす。
+        削除より隔離。破壊せずに正す。
+      </p>
+    </div>
+    <div class="principle-card">
+      <div class="num">04</div>
+      <h3>Plane Separation</h3>
+      <p>
+        制御（Control）と計算（Compute）を物理的に分離する。
+        推論エンジンの依存がパイプラインを壊さない。
+        異なる GPU・異なる環境を、同じ契約で束ねる。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════ Architecture ═══ -->
+<hr class="divider">
+<section class="section" id="architecture">
+  <div class="section-label">Architecture</div>
+  <h2>3-Plane アーキテクチャ</h2>
+
+  <p>
+    実験の<strong>定義・実行・保存</strong>を分離し、ハードウェア差を吸収する設計。
+    Control Plane は推論を一切行わず、Compute Plane との依存を断つ。
+  </p>
+
+  <div class="arch-container">
+    <div class="arch-grid">
+      <div class="arch-plane control">
+        <span class="plane-label">Control Plane</span>
+        <h4>DL325 Gen10 / EPYC</h4>
+        <ul>
+          <li>MCP Server (TypeScript)</li>
+          <li>Runner CLI (Python)</li>
+          <li>MAGI Agents</li>
+          <li>実験定義・統合・監査</li>
+        </ul>
+      </div>
+      <div class="arch-plane compute">
+        <span class="plane-label">Compute Plane</span>
+        <h4>ROCm / CUDA Nodes</h4>
+        <ul>
+          <li>Radeon R9 7900 XTX AI Pro</li>
+          <li>GeForce RTX 3060</li>
+          <li>llama.cpp / vLLM</li>
+          <li>推論実行・env.json 生成</li>
+        </ul>
+      </div>
+      <div class="arch-plane knowledge">
+        <span class="plane-label">Knowledge Plane</span>
+        <h4>Tank (ZFS 5.5TB)</h4>
+        <ul>
+          <li>artifacts/runs/{run_id}/</li>
+          <li>datasets/ &amp; models/</li>
+          <li>docs-ref/ (参照資料)</li>
+          <li>audit_logs/ (監査記録)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <p style="text-align:center; font-size:.85rem; color:var(--text-dim); margin-top:1rem;">
+    Control → Compute: SSH + 固定コマンド　/　Compute → Tank: Artifact 書き戻し　/　Control ← Tank: 統合・分析
+  </p>
+</section>
+
+<!-- ════════════════════════════════════════════════ Artifact ═══ -->
+<hr class="divider">
+<section class="section" id="artifact">
+  <div class="section-label">Artifact Structure</div>
+  <h2>統合成果物 — result.json</h2>
+
+  <p>
+    1つの実験実行（run）が生成するすべての証拠を、単一の統合ファイルに集約する。
+    仕様・環境・応答・メトリクス・整合性ハッシュが不可分に結合される。
+  </p>
+
+  <div class="artifact-tree"><span class="dir">tank/artifacts/runs/{run_id}/</span>
+├── <span class="file">spec.json</span>          <span class="comment"># 実験仕様（契約）</span>
+├── <span class="file">env.json</span>           <span class="comment"># 実行環境の証拠</span>
+├── <span class="file">responses.jsonl</span>    <span class="comment"># 生の推論出力（raw evidence）</span>
+├── <span class="file">result.json</span>        <span class="comment"># 統合成果物</span>
+│   ├─ schema_version
+│   ├─ run_id, created_at
+│   ├─ spec + spec_hash
+│   ├─ env (GPU / OS / driver)
+│   ├─ responses[] + gen_params
+│   ├─ metrics
+│   └─ integrity (SHA-256)
+├── <span class="file">report.md</span>          <span class="comment"># 人間向け分析レポート</span>
+└── <span class="dir">logs/</span>              <span class="comment"># 実行ログ</span></div>
+
+  <p>
+    <code>integrity.responses_sha256</code> と <code>integrity.env_sha256</code> により、
+    成果物が事後に改変されていないことを暗号学的に検証できる。
+  </p>
+</section>
+
+<!-- ════════════════════════════════════════════════ Pipeline ═══ -->
+<hr class="divider">
+<section class="section" id="pipeline">
+  <div class="section-label">Evaluation Pipeline</div>
+  <h2>評価パイプライン</h2>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-date">Step 1</div>
+      <div class="timeline-content">
+        <h4>実験定義 — submit_experiment</h4>
+        <p>spec.json を登録し、一意な run_id（YYYYMMDD-HHMMSS-{hash}）を生成。MCP Server が管理。</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">Step 2</div>
+      <div class="timeline-content">
+        <h4>推論実行 — Compute Node</h4>
+        <p>spec に基づき Compute Node で推論を実行。responses.jsonl と env.json を生成。</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">Step 3</div>
+      <div class="timeline-content">
+        <h4>統合・検証 — runner integrate</h4>
+        <p>JSON妥当性チェック → メトリクス算出 → ハッシュ計算 → result.json を原子的に書き込み。</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">Step 4</div>
+      <div class="timeline-content">
+        <h4>分析・監査 — MAGI Agents</h4>
+        <p>Result Analyst が自動分析。Reviewer がコードを査読。すべて監査ログに記録。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════ Status ═══ -->
+<hr class="divider">
+<section class="section" id="status">
+  <div class="section-label">Current Status</div>
+  <h2>実装状況</h2>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:1.25rem; margin-top:1.5rem;">
+    <div class="principle-card">
+      <h3>MCP Server
+        <span class="status status-active"><span class="status-dot"></span>稼働中</span>
+      </h3>
+      <p>submit_experiment / get_status / fetch_artifacts / list_runs / get_one_pager / run_compute — 6ツール実装済み、systemd 常駐。</p>
+    </div>
+    <div class="principle-card">
+      <h3>Runner CLI
+        <span class="status status-active"><span class="status-dot"></span>稼働中</span>
+      </h3>
+      <p>runner integrate による成果物統合。spec v1.1 gen_params 対応・v1.0後方互換・壊れデータ継続処理。</p>
+    </div>
+    <div class="principle-card">
+      <h3>Compute Runner
+        <span class="status status-active"><span class="status-dot"></span>稼働中</span>
+      </h3>
+      <p>ROCm / CUDA ノードでの推論実行。env.json 自動生成・responses.jsonl 出力。</p>
+    </div>
+    <div class="principle-card">
+      <h3>MAGI Agents
+        <span class="status status-wip"><span class="status-dot"></span>開発中</span>
+      </h3>
+      <p>OpenRouter API 経由の LLM エージェント群。Reviewer / Result Analyst / Doc Writer / Experimenter。</p>
+    </div>
+    <div class="principle-card">
+      <h3>Rust Runner (β)
+        <span class="status status-wip"><span class="status-dot"></span>開発中</span>
+      </h3>
+      <p>Python runner との I/O 互換仕様を策定済み。安全な書き直しとパフォーマンス改善を目指す。</p>
+    </div>
+    <div class="principle-card">
+      <h3>ROCm-UX Docs
+        <span class="status status-active"><span class="status-dot"></span>公開中</span>
+      </h3>
+      <p>MkDocs ベースの公開ドキュメント。ROCm 環境構築・トラブルシューティング・知見の民主化。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════ Claim ═══ -->
+<hr class="divider">
+<section class="section" id="claim">
+  <div class="section-label">Contribution</div>
+  <h2>本研究の主張</h2>
+
+  <div class="philosophy-quote">
+    LLM評価の信頼性は、モデルの能力ではなく、<em>評価手順の透明性</em>に依存する。<br>
+    本研究は、日本語LLM評価において実行環境・仕様・結果を統一的に記録し、<br>
+    <em>再現可能な検証パイプライン</em>を実装・実証した。
+  </div>
+
+  <ol style="margin-top:1.5rem; padding-left:1.5rem; display:flex; flex-direction:column; gap:.75rem;">
+    <li><strong>再現可能な評価パイプライン</strong>を実装し、定義から統合まで1周の実行を実証した</li>
+    <li>実行環境情報（GPU・OS・ドライバ）と評価結果を<strong>統一フォーマットで一体保存</strong>できる</li>
+    <li>Control / Compute Plane の分離により、<strong>ハードウェア差を吸収する運用設計</strong>を示した</li>
+    <li>失敗を含むすべての実行記録を Artifact として保全する<strong>証拠保全の仕組み</strong>を構築した</li>
+  </ol>
+</section>
+
+<!-- ════════════════════════════════════════════════ Footer ═══ -->
+<footer class="footer">
+  <div>
+    <strong style="color:var(--text-bright);">MAGI</strong>
+    &nbsp;·&nbsp; IEICE総合大会 2026
+    &nbsp;·&nbsp; 伊藤 あきら
+  </div>
+  <div class="footer-links">
+    <a href="https://aets-magi.github.io/vega-hbmx-pages/general-audience.html">未来の道具を、みんなの手に。</a>
+    <a href="https://github.com/AETS-MAGI">GitHub</a>
+    <a href="#top">↑ Top</a>
+  </div>
+</footer>
+
+</body>
+</html>
