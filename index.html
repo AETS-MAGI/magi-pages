@@ -579,6 +579,66 @@
     }
     .soon-links a:hover { border-color: var(--accent); opacity: 1; }
 
+    /* ================================ Repo cards ================================ */
+    .repo-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.6rem;
+      max-width: 860px;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .repo-card {
+      padding: 2rem 1.8rem;
+      border: 1px solid rgba(126,184,255,.14);
+      border-radius: 12px;
+      background: rgba(255,255,255,.03);
+      text-align: left;
+      transition: border-color .35s, background .35s, box-shadow .35s;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: .7rem;
+    }
+    .repo-card:hover {
+      border-color: rgba(126,184,255,.38);
+      background: rgba(126,184,255,.07);
+      box-shadow: 0 0 36px rgba(126,184,255,.10);
+      opacity: 1;
+    }
+    .repo-card-badge {
+      font-family: var(--font-mono);
+      font-size: .7rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+    .repo-card-name {
+      font-family: var(--font-mono);
+      font-size: 1.06rem;
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+    .repo-card-desc {
+      font-size: .92rem;
+      font-weight: 300;
+      color: rgba(200,214,234,.88);
+      line-height: 1.75;
+    }
+    .repo-card-license {
+      font-family: var(--font-mono);
+      font-size: .72rem;
+      color: rgba(160,180,210,.72);
+      margin-top: auto;
+      padding-top: .4rem;
+    }
+
+    @media (max-width: 640px) {
+      .repo-cards { grid-template-columns: 1fr; }
+    }
+
     /* ================================ Footer ================================ */
     .footer {
       position: relative;
@@ -735,19 +795,34 @@
   </div>
 </section>
 
-<!-- ═══════════════════════════════════ SLIDE 5 / COMING SOON ═══ -->
-<section class="slide slide-soon" id="coming-soon">
+<!-- ═══════════════════════════════════ SLIDE 5 / OPEN SOURCE ═══ -->
+<section class="slide slide-soon" id="repositories">
   <div class="fade-in">
-    <div class="soon-label">Coming Soon</div>
+    <div class="soon-label">Open Source</div>
     <p class="soon-en">
-      Architecture, artifacts, and pipeline details<br>
-      will be published after the presentation.
+      MAGI is now publicly available.<br>
+      Explore the implementation and evidence dataset below.
     </p>
     <p class="soon-jp">
-      構成図、成果物構造、評価パイプラインの詳細は<br>
-      発表後に順次公開予定です。
+      実装基盤と実験証拠データを公開しています。
     </p>
-    <div class="soon-links">
+
+    <div class="repo-cards">
+      <a class="repo-card" href="https://github.com/AETS-MAGI/MAGI-oss_python" target="_blank" rel="noopener">
+        <span class="repo-card-badge">Control Plane · MCP Server</span>
+        <span class="repo-card-name">MAGI-oss_python</span>
+        <span class="repo-card-desc">MCPサーバー・統合Runner・Compute Node CLIの実装。Claude Desktop などから実験の投入・管理・結果取得が可能。</span>
+        <span class="repo-card-license">MIT License</span>
+      </a>
+      <a class="repo-card" href="https://github.com/AETS-MAGI/MAGI-Results" target="_blank" rel="noopener">
+        <span class="repo-card-badge">Evidence Dataset</span>
+        <span class="repo-card-name">MAGI-Results</span>
+        <span class="repo-card-desc">3 GPU環境（ROCm × 2 + MI300X）での実験成果物一式。spec / env / responses / result.json を完全公開。</span>
+        <span class="repo-card-license">CC BY 4.0</span>
+      </a>
+    </div>
+
+    <div class="soon-links" style="margin-top: 2.8rem;">
       <a href="https://zenodo.org/records/16535944" target="_blank" rel="noopener">Zenodo</a>
       <a href="src/media/日本語LLM評価のための再現可能な検証基盤設計.pdf">発表PDF</a>
       <a href="https://github.com/AETS-MAGI" target="_blank" rel="noopener">GitHub</a>
